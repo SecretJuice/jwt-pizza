@@ -13,9 +13,9 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | Verify pizza                                        | delivery.jsx       | [POST] {pizzaFactory}/api/order/verify | none                |              |
 | View profile page                                   | dinerDashboard.jsx | [GET] /api/order  | `SELECT id, franchiseId, storeId, date FROM dinerOrder WHERE dinerId=? LIMIT ${offset},${config.db.listPerPage}` <br/> `SELECT id, menuId, description, price FROM orderItem WHERE orderId=?`            |
 | View franchise<br/>(as diner)                       | franchiseDashboard.jsx                   |  [GET] /api/franchise/{userId}                 | `SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` <br/> `SELECT id, name FROM franchise WHERE id in (${franchiseIds.join(',')})`             |
-| Logout                                              |                    |                   |              |
-| View About page                                     |                    |                   |              |
-| View History page                                   |                    |                   |              |
+| Logout                                              |     logout.jsx               | [DELETE] /api/auth                  | `DELETE FROM auth WHERE token=?`             |
+| View About page                                     |     about.jsx               |  none                 | none              |
+| View History page                                   | history.jsx                    | none                  | none              |
 | Login as franchisee<br/>(f@jwt.com, pw: franchisee) |                    |                   |              |
 | View franchise<br/>(as franchisee)                  |                    |                   |              |
 | Create a store                                      |                    |                   |              |
