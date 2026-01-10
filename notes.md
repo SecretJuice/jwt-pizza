@@ -11,8 +11,8 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | Login new user<br/>(t@jwt.com, pw: test)            | login.jsx          | [PUT] /api/auth   | `INSERT INTO auth (token, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE token=token`             |
 | Order pizza                                         | menu.jsx, payment.jsx | [POST] /api/order | `INSERT INTO dinerOrder (dinerId, franchiseId, storeId, date) VALUES (?, ?, ?, now())` <br/> `INSERT INTO orderItem (orderId, menuId, description, price) VALUES (?, ?, ?, ?)`            |
 | Verify pizza                                        | delivery.jsx       | [POST] {pizzaFactory}/api/order/verify | none                |              |
-| View profile page                                   |                    |                   |              |
-| View franchise<br/>(as diner)                       |                    |                   |              |
+| View profile page                                   | dinerDashboard.jsx | [GET] /api/order  | `SELECT id, franchiseId, storeId, date FROM dinerOrder WHERE dinerId=? LIMIT ${offset},${config.db.listPerPage}` <br/> `SELECT id, menuId, description, price FROM orderItem WHERE orderId=?`            |
+| View franchise<br/>(as diner)                       | franchiseDashboard.jsx                   |  [GET] /api/franchise/{userId}                 | `SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` <br/> `SELECT id, name FROM franchise WHERE id in (${franchiseIds.join(',')})`             |
 | Logout                                              |                    |                   |              |
 | View About page                                     |                    |                   |              |
 | View History page                                   |                    |                   |              |
