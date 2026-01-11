@@ -17,10 +17,10 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | View About page                                     |     about.jsx               |  none                 | none              |
 | View History page                                   | history.jsx                    | none                  | none              |
 | Login as franchisee<br/>(f@jwt.com, pw: franchisee) | login.jsx          | [PUT] /api/auth   | `INSERT INTO auth (token, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE token=token`             |
-| View franchise<br/>(as franchisee)                  |                    |                   |              |
+| View franchise<br/>(as franchisee)                  | franchiseDashboard.jsx                   |  [GET] /api/franchise/{userId}                 | `SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` <br/> `SELECT id, name FROM franchise WHERE id in (${franchiseIds.join(',')})`             |
 | Create a store                                      |                    |                   |              |
 | Close a store                                       |                    |                   |              |
 | Login as admin<br/>(a@jwt.com, pw: admin)           | login.jsx          | [PUT] /api/auth   | `INSERT INTO auth (token, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE token=token`             |
-| View Admin page                                     |                    |                   |              |
+| View Admin page                                     | adminDashboard.jsx          | [GET] /api/franchise?page={page}&limit={limit}&name={nameFilter}                 | `SELECT id, name FROM franchise WHERE name LIKE ? LIMIT ${limit + 1} OFFSET ${offset}` <br/> `SELECT id, name FROM store WHERE franchiseId=?`              |
 | Create a franchise for t@jwt.com                    |                    |                   |              |
 | Close the franchise for t@jwt.com                   |                    |                   |              |
