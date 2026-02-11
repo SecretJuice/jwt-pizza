@@ -6,8 +6,9 @@ async function basicInit(page: Page) {
   let loggedInUser: User | undefined;
   const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] } };
 
-  // Authorize login for the given user and handle logout.
+  // Authorize login, register, and handle logout.
   await page.route('*/**/api/auth', async (route) => {
+    console.log("METHOD: " + route.request().method())
     const method = route.request().method();
     if (method === 'PUT') {
       const loginReq = route.request().postDataJSON();
@@ -22,6 +23,26 @@ async function basicInit(page: Page) {
         token: 'abcdef',
       };
       await route.fulfill({ json: loginRes });
+      return;
+    }
+
+    if (method === 'POST') {
+      const registerReq = route.request().postDataJSON();
+      const existingUser = validUsers[registerReq.email];
+      if (existingUser) {
+        await route.fulfill({ status: 409, json: { error: 'User already exists' } });
+        return;
+      }
+      const newUser: User = {
+        id: '99',
+        name: registerReq.name,
+        email: registerReq.email,
+        password: registerReq.password,
+        roles: [{ role: Role.Diner }],
+      };
+      validUsers[registerReq.email] = newUser;
+      loggedInUser = newUser;
+      await route.fulfill({ json: { user: newUser, token: 'abcdef' } });
       return;
     }
 
@@ -147,4 +168,13 @@ test('logout', async ({ page }) => {
   await page.getByRole('button', { name: 'Login' }).click();
   await page.getByRole('link', { name: 'Logout' }).click();
   await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
+})
+
+test('register', async ({ page }) => {
+  await basicInit(page)
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill('test');
+  await page.getByRole('textbox', { name: 'Email address' }).fill('d@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('test');
+  await page.getByRole('button', { name: 'Register' }).click();
 })
