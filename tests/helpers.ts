@@ -156,7 +156,29 @@ export async function BasicInit(page: Page) {
   })
 
   await page.route('*/**/api/franchise/*/store', async (route) => {
-        console.log('POST /api/franchise/:id/store')
+        const method = route.request().method();
+        if (method === 'POST') {
+          console.log('POST /api/franchise/:id/store')
+          const url = new URL(route.request().url())
+          const franchiseId = url.pathname.split("/")[3]
+          const storeReq = route.request().postDataJSON();
+
+          const franchise = franchises.find(f => f.id === franchiseId)
+          if (!franchise) {
+            await route.fulfill({ status: 404, json: { error: 'Franchise not found' } });
+            return;
+          }
+
+          const createdStore: Store = {
+            id: storeReq.id ?? String(nextStoreId++),
+            name: storeReq.name,
+          };
+          franchise.stores.push(createdStore);
+          await route.fulfill({ json: createdStore });
+          return;
+        }
+
+        await route.fulfill({ status: 405, json: { error: 'Method Not Allowed' } });
   })
 
   await page.route('*/**/api/franchise/*/store/*', async (route) => {
