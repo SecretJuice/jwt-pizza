@@ -18,7 +18,14 @@ export async function BasicInit(page: Page) {
         email: 'f@jwt.com',
         password: 'a',
         roles: [{ role: Role.Franchisee, objectId: '5'}]
-      }
+      },
+     'a@jwt.com': { 
+        id: '5', 
+        name: 'Boss Man', 
+        email: 'a@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Admin }]
+      },
     };
   const franchises: Franchise[] = [
     {
@@ -229,6 +236,9 @@ export async function LoginDiner(page: Page) {
 }
 export async function LoginFranchisee(page: Page) {
   await login(page, 'f@jwt.com', 'a')
+}
+export async function LoginAdmin(page: Page) {
+  await login(page, 'a@jwt.com', 'a')
 }
 
 async function login(page: Page, email: string, password: string) {
