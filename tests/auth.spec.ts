@@ -9,6 +9,18 @@ test('login', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'KC' })).toBeVisible();
 });
 
+test('diner dashboard', async ({ page }) => {
+  await BasicInit(page);
+  await page.getByRole('link', { name: 'Login' }).click();
+  await LoginDiner(page)
+
+
+  await page.getByRole('link', { name: 'KC' }).click();
+  await expect(page.getByRole('main')).toContainText('Kai Chen');
+  await expect(page.getByRole('main')).toContainText('d@jwt.com');
+  await expect(page.getByRole('main')).toContainText('diner');
+});
+
 test('purchase with login', async ({ page }) => {
   await BasicInit(page);
 

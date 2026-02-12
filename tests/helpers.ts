@@ -124,6 +124,37 @@ export async function BasicInit(page: Page) {
     await route.fulfill({ json: menuRes });
   });
 
+  await page.route('*/**/api/franchise', async (route) => {
+    console.log('POST /api/franchise')
+    expect(route.request().method()).toBe('POST');
+
+    const franchiseReq = route.request().postDataJSON();
+
+    const createdFranchise: Franchise = {
+      id: String(nextFranchiseId++),
+      name: franchiseReq.name,
+      stores: [],
+      admins: [],
+    };
+
+    const adminEmail = franchiseReq.admins?.[0]?.email;
+    if (adminEmail) {
+      const adminUser = validUsers[adminEmail];
+      if (adminUser) {
+        createdFranchise.admins = [{ email: adminEmail, id: adminUser.id, name: adminUser.name }];
+        if (adminUser.id) {
+          franchiseByUserId[adminUser.id] = createdFranchise.id;
+        }
+      } else {
+        createdFranchise.admins = [{ email: adminEmail }];
+      }
+    }
+
+    franchises.push(createdFranchise);
+
+    await route.fulfill({ json: createdFranchise })
+  })
+
   await page.route('*/**/api/franchise?*', async (route) => {
     console.log('GET /api/franchise?page=*&limit=*&name=*')
     const url = new URL(route.request().url())
@@ -219,13 +250,17 @@ export async function BasicInit(page: Page) {
 
   // Order a pizza.
   await page.route('*/**/api/order', async (route) => {
-    const orderReq = route.request().postDataJSON();
-    const orderRes = {
-      order: { ...orderReq, id: 23 },
-      jwt: 'eyJpYXQ',
-    };
-    expect(route.request().method()).toBe('POST');
-    await route.fulfill({ json: orderRes });
+
+    const method = route.request().method()
+
+    if (method === 'POST') {
+      const orderReq = route.request().postDataJSON();
+      const orderRes = {
+        order: { ...orderReq, id: 23 },
+        jwt: 'eyJpYXQ',
+      };
+      await route.fulfill({ json: orderRes });
+    }
   });
 
   await page.goto('/');
