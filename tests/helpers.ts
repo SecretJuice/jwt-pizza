@@ -42,9 +42,9 @@ export async function BasicInit(page: Page) {
 
   // Authorize login, register, and handle logout.
   await page.route('*/**/api/auth', async (route) => {
-    console.log("METHOD: " + route.request().method())
     const method = route.request().method();
     if (method === 'PUT') {
+      console.log('LOGGING IN')
       const loginReq = route.request().postDataJSON();
       const user = validUsers[loginReq.email];
       if (!user || user.password !== loginReq.password) {
@@ -132,6 +132,23 @@ export async function BasicInit(page: Page) {
 
     if (method === 'GET') {
         console.log('GET /api/franchise/:userId')
+        const url = new URL(route.request().url())
+        const userId = url.pathname.split("/")[3]
+        
+        console.log("Getting Franchise for user", userId)
+
+        const franchiseId = franchiseByUserId[userId]
+        if (franchiseId == null) {
+          console.log("No franshise found!")
+          await route.fulfill({ status: 404, json: { error: 'Franchise not found' } });
+          return
+        }
+        
+        const fran = franchises.find(f => f.id === franchiseId)
+
+        console.log(fran)
+
+        await route.fulfill({json: [fran]})
 
     } else if (method === 'DELETE') {
         console.log('DELETE /api/franchise/:id')
