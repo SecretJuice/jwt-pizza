@@ -182,7 +182,32 @@ export async function BasicInit(page: Page) {
   })
 
   await page.route('*/**/api/franchise/*/store/*', async (route) => {
-        console.log('DELETE /api/franchise/:id/store/:storeId')
+
+        const method = route.request().method();
+        if (method === 'DELETE') {
+          console.log('DELETE /api/franchise/:id/store/:storeId')
+          const url = new URL(route.request().url())
+          const franchiseId = url.pathname.split("/")[3]
+          const storeId = url.pathname.split("/")[5]
+
+          const franchise = franchises.find(f => f.id === franchiseId)
+          if (!franchise) {
+            await route.fulfill({ status: 404, json: { error: 'Franchise not found' } });
+            return;
+          }
+
+          const storeIndex = franchise.stores.findIndex(store => store.id === storeId);
+          if (storeIndex === -1) {
+            await route.fulfill({ status: 404, json: { error: 'Store not found' } });
+            return;
+          }
+          franchise.stores.splice(storeIndex, 1);
+
+          await route.fulfill({ json: { message: 'store deleted' } });
+          return;
+        }
+
+        await route.fulfill({ status: 405, json: { error: 'Method Not Allowed' } });
   })
 
   // Order a pizza.
