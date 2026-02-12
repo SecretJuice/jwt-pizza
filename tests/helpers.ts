@@ -118,6 +118,7 @@ export async function BasicInit(page: Page) {
   });
 
   await page.route('*/**/api/franchise?*', async (route) => {
+    console.log('GET /api/franchise?page=*&limit=*&name=*')
     const url = new URL(route.request().url())
     const page = url.searchParams.get("page")
     const limit = url.searchParams.get("limit")
@@ -130,18 +131,19 @@ export async function BasicInit(page: Page) {
     const method = route.request().method();
 
     if (method === 'GET') {
+        console.log('GET /api/franchise/:userId')
 
     } else if (method === 'DELETE') {
-
+        console.log('DELETE /api/franchise/:id')
     }
   })
 
   await page.route('*/**/api/franchise/*/store', async (route) => {
-
+        console.log('POST /api/franchise/:id/store')
   })
 
   await page.route('*/**/api/franchise/*/store/*', async (route) => {
-
+        console.log('DELETE /api/franchise/:id/store/:storeId')
   })
 
   // Order a pizza.
