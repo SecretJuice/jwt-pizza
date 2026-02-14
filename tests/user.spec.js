@@ -19,4 +19,6 @@ test('updateUser', async ({ page }) => {
   await page.waitForSelector('[role="dialog"].hidden', { state: 'attached' });
 
   await expect(page.getByRole('main')).toContainText('pizza dinerx');
+  await page.getByRole('link', { name: 'Logout' }).click();
+
 });
