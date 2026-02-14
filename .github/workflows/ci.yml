@@ -29,6 +29,7 @@ jobs:
 
       - name: Run tests
         run: |
+          npm ci
           npx playwright install --with-deps chromium
           npm run test:coverage
       - name: Update coverage
