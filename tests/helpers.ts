@@ -51,7 +51,7 @@ export async function BasicInit(page: Page) {
   await page.route('*/**/api/auth', async (route) => {
     const method = route.request().method();
     if (method === 'PUT') {
-      console.log('LOGGING IN')
+      console.log('PUT /api/auth')
       const loginReq = route.request().postDataJSON();
       const user = validUsers[loginReq.email];
       if (!user || user.password !== loginReq.password) {
@@ -68,6 +68,7 @@ export async function BasicInit(page: Page) {
     }
 
     if (method === 'POST') {
+      console.log('POST /api/auth')
       const registerReq = route.request().postDataJSON();
       const existingUser = validUsers[registerReq.email];
       if (existingUser) {
@@ -75,7 +76,7 @@ export async function BasicInit(page: Page) {
         return;
       }
       const newUser: User = {
-        id: '99',
+        id: Math.floor(6 + (Math.random() * 1000000)).toString(), // random id, never pick existing
         name: registerReq.name,
         email: registerReq.email,
         password: registerReq.password,
@@ -88,6 +89,7 @@ export async function BasicInit(page: Page) {
     }
 
     if (method === 'DELETE') {
+      console.log('DELETE /api/auth')
       loggedInUser = undefined;
       await route.fulfill({ json: { message: 'logged out' } });
       return;
@@ -96,9 +98,41 @@ export async function BasicInit(page: Page) {
     await route.fulfill({ status: 405, json: { error: 'Method Not Allowed' } });
   });
 
+
+  await page.route('*/**/api/user/*', async (route) => {
+    expect(route.request().method()).toBe('PUT');
+    console.log("PUT /api/user/:userId")
+
+    let url = new URL(route.request().url())
+
+    const userId = url.pathname.split("/")[3]
+
+    const updatedUser: User = route.request().postDataJSON()
+    // if (updatedUser == undefined) { 
+    //   route.fulfill({ status: 404, json: "User doesn't exist"})
+    //   return;
+    // }
+
+    let user: User = validUsers[updatedUser.email ?? '']
+    if (user == null) {
+      route.fulfill({ status: 404, json: "User doesn't exist"})
+      return;
+    }
+
+    user.email = updatedUser.email ?? user.email
+    user.name = updatedUser.name ?? user.name
+    user.password = updatedUser.password ?? user.password
+
+    validUsers[user.email ?? ''] = user;
+
+    route.fulfill({ json: { email: user.email, roles: user.roles } })
+    return;
+  });
+
   // Return the currently logged in user
   await page.route('*/**/api/user/me', async (route) => {
     expect(route.request().method()).toBe('GET');
+    console.log("GET /api/user/me")
     await route.fulfill({ json: loggedInUser });
   });
 
