@@ -18,7 +18,7 @@ export default function AdminDashboard(props: Props) {
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
 
   const [userList, setUserList] = React.useState<UserList>({ users: [], more: false });
-  const [userPage, setUserPage] = React.useState(0);
+  const [userPage, setUserPage] = React.useState(1);
   const filterUserRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -51,7 +51,7 @@ export default function AdminDashboard(props: Props) {
 
   async function deleteUser(id: number) {
     await pizzaService.deleteUser(id)
-    await filterUsers()
+    setUserList(await pizzaService.getUsers(userPage, 10, filterUserRef.current?.value ?? ''));
   }
 
   let response = <NotFound />;
@@ -182,7 +182,7 @@ export default function AdminDashboard(props: Props) {
                             </button>
                           </td>
                           <td colSpan={4} className="text-end text-sm font-medium">
-                            <button className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300 " onClick={() => setUserPage(userPage - 1)} disabled={userPage <= 0}>
+                            <button className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300 " onClick={() => setUserPage(userPage - 1)} disabled={userPage <= 1}>
                               «
                             </button>
                             <button className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300" onClick={() => setUserPage(userPage + 1)} disabled={!userList.more}>

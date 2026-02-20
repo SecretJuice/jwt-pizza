@@ -25,7 +25,7 @@ test('create franchise', async ({ page }) => {
   await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('f@jwt.com');
   await page.getByRole('button', { name: 'Create' }).click();
   await page.getByRole('textbox', { name: 'Filter franchises' }).fill('Test Franchise!');
-  await page.getByRole('button', { name: 'Submit' }).click();
+  await page.getByRole('button', { name: 'Submit' }).nth(0).click();
   await expect(page.getByRole('cell', { name: 'Test Franchise!', exact: true })).toBeVisible();  
 });
 

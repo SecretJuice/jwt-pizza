@@ -180,9 +180,9 @@ export async function BasicInit(page: Page) {
       const substring = name.replace(/\*/g, '').toLowerCase();
       users = users.filter((user) => (user.name ?? '').toLowerCase().includes(substring));
     }
-    const pageNumber = Number(page ?? 0);
+    const pageNumber = Number(page ?? 1);
     const limitNumber = Number(limit ?? users.length);
-    const start = Math.max(0, pageNumber) * Math.max(0, limitNumber);
+    const start = Math.max(0, pageNumber - 1) * Math.max(0, limitNumber);
     const end = start + Math.max(0, limitNumber);
     const pagedUsers = users.slice(start, end);
     const more = end < users.length;
