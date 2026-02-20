@@ -63,3 +63,16 @@ test('see users table in dashboard', async ({ page }) => {
   await expect(page.getByRole('button', { name: '«' }).nth(1)).toBeEnabled();
   await expect(page.getByRole('button', { name: '»' }).nth(1)).not.toBeEnabled();
 })
+
+test('delete user from dashboard', async ({ page }) => {
+  await BasicInit(page);
+
+  await page.getByRole('link', { name: 'Login' }).click();
+  await LoginAdmin(page)
+
+  await page.getByRole('link', { name: 'Admin' }).click();
+
+  await expect(page.getByRole('main')).toContainText('Avery Parker');
+  await page.locator('tr:nth-child(4) > .px-6.py-4.text-end.text-sm.font-medium > .px-2').click();
+  await expect(page.getByRole('main')).not.toContainText('Avery Parker');
+})
