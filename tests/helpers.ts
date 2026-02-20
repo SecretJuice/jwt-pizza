@@ -26,6 +26,76 @@ export async function BasicInit(page: Page) {
         password: 'a',
         roles: [{ role: Role.Admin }]
       },
+      'u1@jwt.com': {
+        id: '6',
+        name: 'Avery Parker',
+        email: 'u1@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u2@jwt.com': {
+        id: '7',
+        name: 'Blake Morgan',
+        email: 'u2@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u3@jwt.com': {
+        id: '8',
+        name: 'Casey Reed',
+        email: 'u3@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u4@jwt.com': {
+        id: '9',
+        name: 'Drew Kim',
+        email: 'u4@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u5@jwt.com': {
+        id: '10',
+        name: 'Evan Ortiz',
+        email: 'u5@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u6@jwt.com': {
+        id: '11',
+        name: 'Finley Ross',
+        email: 'u6@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u7@jwt.com': {
+        id: '12',
+        name: 'Gabe Patel',
+        email: 'u7@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u8@jwt.com': {
+        id: '13',
+        name: 'Hayden Lopez',
+        email: 'u8@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u9@jwt.com': {
+        id: '14',
+        name: 'Jules Carter',
+        email: 'u9@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
+      'u10@jwt.com': {
+        id: '15',
+        name: 'Kendall Nguyen',
+        email: 'u10@jwt.com',
+        password: 'a',
+        roles: [{ role: Role.Diner }]
+      },
     };
   const franchises: Franchise[] = [
     {
@@ -110,7 +180,13 @@ export async function BasicInit(page: Page) {
       const substring = name.replace(/\*/g, '').toLowerCase();
       users = users.filter((user) => (user.name ?? '').toLowerCase().includes(substring));
     }
-    await route.fulfill({ json: {users} })
+    const pageNumber = Number(page ?? 0);
+    const limitNumber = Number(limit ?? users.length);
+    const start = Math.max(0, pageNumber) * Math.max(0, limitNumber);
+    const end = start + Math.max(0, limitNumber);
+    const pagedUsers = users.slice(start, end);
+    const more = end < users.length;
+    await route.fulfill({ json: {users: pagedUsers, more} })
     return;
   });
 

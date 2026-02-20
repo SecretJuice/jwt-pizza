@@ -51,4 +51,10 @@ test('see users table in dashboard', async ({ page }) => {
 
   await expect(page.getByRole('main')).toContainText('Kai Chen');
   await expect(page.getByRole('main')).not.toContainText('Boss Man');
+
+  await page.getByRole('textbox', { name: 'Filter users' }).fill('');
+  await page.getByRole('button', { name: 'Submit' }).nth(1).click();
+
+  await expect(page.getByRole('button', { name: '»' }).nth(1)).toBeEnabled();
+  
 })
