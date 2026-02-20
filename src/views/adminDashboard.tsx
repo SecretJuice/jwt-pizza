@@ -25,7 +25,7 @@ export default function AdminDashboard(props: Props) {
     (async () => {
       console.log('Set user listadsflkjasdjlkfsajdklljdksafjklsadfjlkdfsj')
       setFranchiseList(await pizzaService.getFranchises(franchisePage, 3, '*'));
-      setUserList(await pizzaService.getUsers(userPage, 3, ''));
+      setUserList(await pizzaService.getUsers(userPage, 10, ''));
     })();
   }, [props.user, franchisePage, userPage]);
 
@@ -177,10 +177,10 @@ export default function AdminDashboard(props: Props) {
                             </button>
                           </td>
                           <td colSpan={4} className="text-end text-sm font-medium">
-                            <button className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300 " onClick={() => setFranchisePage(franchisePage - 1)} disabled={franchisePage <= 0}>
+                            <button className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300 " onClick={() => setUserPage(userPage - 1)} disabled={userPage <= 0}>
                               «
                             </button>
-                            <button className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300" onClick={() => setFranchisePage(franchisePage + 1)} disabled={!franchiseList.more}>
+                            <button className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300" onClick={() => setUserPage(userPage + 1)} disabled={!userList.more}>
                               »
                             </button>
                           </td>

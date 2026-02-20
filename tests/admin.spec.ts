@@ -55,6 +55,11 @@ test('see users table in dashboard', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Filter users' }).fill('');
   await page.getByRole('button', { name: 'Submit' }).nth(1).click();
 
+  await expect(page.getByRole('button', { name: '«' }).nth(1)).not.toBeEnabled();
   await expect(page.getByRole('button', { name: '»' }).nth(1)).toBeEnabled();
-  
+  await page.getByRole('button', { name: '»' }).nth(1).click();
+  await expect(page.getByRole('main')).not.toContainText('Kai Chen');
+  await expect(page.getByRole('main')).toContainText('Hayden Lopez');
+  await expect(page.getByRole('button', { name: '«' }).nth(1)).toBeEnabled();
+  await expect(page.getByRole('button', { name: '»' }).nth(1)).not.toBeEnabled();
 })
