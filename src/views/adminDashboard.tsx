@@ -17,6 +17,10 @@ export default function AdminDashboard(props: Props) {
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
 
+  const [userList, setUserList] = React.useState<FranchiseList>({ users: [], more: false });
+  const [userPage, setUserPage] = React.useState(0);
+  const filterUserRef = React.useRef<HTMLInputElement>(null);
+
   React.useEffect(() => {
     (async () => {
       setFranchiseList(await pizzaService.getFranchises(franchisePage, 3, '*'));
@@ -186,8 +190,6 @@ export default function AdminDashboard(props: Props) {
               </div>
             </div>
           </div>
-
-          <Button className="flex-none" title="Create user" onPress={() => console.log('asdf')} />
         </div>
       </View>
     );
