@@ -108,10 +108,6 @@ export async function BasicInit(page: Page) {
     const userId = url.pathname.split("/")[3]
 
     const updatedUser: User = route.request().postDataJSON()
-    // if (updatedUser == undefined) { 
-    //   route.fulfill({ status: 404, json: "User doesn't exist"})
-    //   return;
-    // }
 
     let user: User = validUsers[updatedUser.email ?? '']
     if (user == null) {
