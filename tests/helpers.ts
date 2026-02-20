@@ -191,12 +191,25 @@ export async function BasicInit(page: Page) {
   });
 
   await page.route('*/**/api/user/*', async (route) => {
-    expect(route.request().method()).toBe('PUT');
-    console.log("PUT /api/user/:userId")
-
-    let url = new URL(route.request().url())
-
+    const method = route.request().method();
+    const url = new URL(route.request().url())
     const userId = url.pathname.split("/")[3]
+
+    if (method === 'DELETE') {
+      console.log("DELETE /api/user/:userId")
+      const existingEntry = Object.entries(validUsers).find(([, user]) => user.id === userId);
+      if (!existingEntry) {
+        await route.fulfill({ status: 404, json: { message: "User doesn't exist" } })
+        return;
+      }
+      const [email] = existingEntry;
+      delete validUsers[email];
+      await route.fulfill({ status: 200, json: { message: "User deleted" } })
+      return;
+    }
+
+    expect(method).toBe('PUT');
+    console.log("PUT /api/user/:userId")
 
     const updatedUser: User = route.request().postDataJSON()
 

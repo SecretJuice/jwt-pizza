@@ -71,8 +71,11 @@ class HttpPizzaService implements PizzaService {
   }
 
   async getUsers(page: number, limit: number, nameFilter: string): Promise<UserList> {
-    console.log("GET USERS:", page, limit, nameFilter)
     return this.callEndpoint(`/api/user?page=${page}&limit=${limit}${nameFilter ? `&name=${nameFilter}` : ''}`, 'GET');
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    return this.callEndpoint(`/api/user/${id}`, 'DELETE');  
   }
 
   async updateUser(updatedUser: User): Promise<User> {
