@@ -105,7 +105,12 @@ export async function BasicInit(page: Page) {
     const limit = url.searchParams.get("limit")
     const name = url.searchParams.get("name")
     console.log(`GET /api/user?page=${page}&limit=${limit}&name=${name}`)
-    await route.fulfill({ json: {users: Object.values(validUsers)} })
+    let users = Object.values(validUsers);
+    if (name && name.trim() !== '') {
+      const substring = name.replace(/\*/g, '').toLowerCase();
+      users = users.filter((user) => (user.name ?? '').toLowerCase().includes(substring));
+    }
+    await route.fulfill({ json: {users} })
     return;
   });
 
