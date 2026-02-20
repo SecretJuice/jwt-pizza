@@ -43,4 +43,8 @@ test('see users table in dashboard', async ({ page }) => {
   await expect(page.getByRole('columnheader', { name: 'Role' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create user' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Filter users' })).toBeVisible();
+
+  await expect(page.getByRole('main')).toContainText('Kai Chen');
+  await expect(page.getByRole('main')).toContainText('d@jwt.com');
+  await expect(page.getByRole('main')).toContainText('diner');
 })
