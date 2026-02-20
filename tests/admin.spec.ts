@@ -28,3 +28,14 @@ test('create franchise', async ({ page }) => {
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(page.getByRole('cell', { name: 'Test Franchise!', exact: true })).toBeVisible();  
 });
+
+test('see users table in dashboard', async ({ page }) => {
+  await BasicInit(page);
+
+  await page.getByRole('link', { name: 'Login' }).click();
+  await LoginAdmin(page)
+
+  await page.getByRole('link', { name: 'Admin' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Users' })).toBeVisible();
+})
