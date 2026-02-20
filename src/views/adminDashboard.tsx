@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import NotFound from './notFound';
 import Button from '../components/button';
 import { pizzaService } from '../service/service';
-import { Franchise, FranchiseList, Role, Store, User } from '../service/pizzaService';
+import { Franchise, FranchiseList, Role, Store, User, UserList } from '../service/pizzaService';
 import { TrashIcon } from '../icons';
 
 interface Props {
@@ -17,15 +17,17 @@ export default function AdminDashboard(props: Props) {
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
 
-  const [userList, setUserList] = React.useState<FranchiseList>({ users: [], more: false });
+  const [userList, setUserList] = React.useState<UserList>({ users: [], more: false });
   const [userPage, setUserPage] = React.useState(0);
   const filterUserRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     (async () => {
+      console.log('Set user listadsflkjasdjlkfsajdklljdksafjklsadfjlkdfsj')
       setFranchiseList(await pizzaService.getFranchises(franchisePage, 3, '*'));
+      setUserList(await pizzaService.getUsers(userPage, 3, ''));
     })();
-  }, [props.user, franchisePage]);
+  }, [props.user, franchisePage, userPage]);
 
   function createFranchise() {
     navigate('/admin-dashboard/create-franchise');
@@ -145,15 +147,11 @@ export default function AdminDashboard(props: Props) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
-                        {[
-                          {id: 1, name: 'Bill', email: 'bill@jwt.com', role: 'franchisee'},
-                          {id: 2, name: 'Jill', email: 'jill@jwt.com', role: 'admin'},
-                          {id: 3, name: 'Frill', email: 'frill@jwt.com', role: 'diner'},
-                        ].map((user, index) => (
+                        {userList.users.map((user, index) => (
                           <tr key={index} className="hover:bg-gray-100">
                             <td className="px-6 py-4 text-sm text-center font-medium text-gray-800">{user.name}</td>
                             <td className="px-6 py-4 text-end text-sm text-gray-800">{user.email?.toLocaleString()}</td>
-                            <td className="px-6 py-4 text-end text-sm text-gray-800">{user.role}</td>
+                            <td className="px-6 py-4 text-end text-sm text-gray-800">{user.roles ? user.roles[0].role : 'unknown'}</td>
                             <td className="px-6 py-4 text-end text-sm font-medium">
                               <button
                                 type="button"

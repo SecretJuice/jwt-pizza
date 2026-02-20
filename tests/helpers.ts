@@ -98,6 +98,16 @@ export async function BasicInit(page: Page) {
     await route.fulfill({ status: 405, json: { error: 'Method Not Allowed' } });
   });
 
+  await page.route('*/**/api/user?*', async (route) => {
+    expect(route.request().method()).toBe('GET');
+    const url = new URL(route.request().url())
+    const page = url.searchParams.get("page")
+    const limit = url.searchParams.get("limit")
+    const name = url.searchParams.get("name")
+    console.log(`GET /api/user?page=${page}&limit=${limit}&name=${name}`)
+    await route.fulfill({ json: {users: Object.values(validUsers)} })
+    return;
+  });
 
   await page.route('*/**/api/user/*', async (route) => {
     expect(route.request().method()).toBe('PUT');
