@@ -57,6 +57,12 @@ variable "cloudflare_proxied" {
   default     = false
 }
 
+variable "deployment_policy_name" {
+  description = "Name of IAM policy used for deployment access to S3 and CloudFront invalidation."
+  type        = string
+  default     = "jwt-pizza-deployment-access"
+}
+
 variable "default_root_object" {
   description = "Default root object served by CloudFront."
   type        = string

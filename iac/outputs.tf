@@ -17,3 +17,8 @@ output "acm_certificate_arn" {
   description = "ARN of the ACM certificate attached to CloudFront."
   value       = aws_acm_certificate_validation.site_cert.certificate_arn
 }
+
+output "deployment_policy_arn" {
+  description = "ARN of IAM policy for deployment (S3 object updates + CloudFront invalidation)."
+  value       = aws_iam_policy.deployment_access.arn
+}

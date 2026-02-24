@@ -175,3 +175,41 @@ resource "aws_s3_bucket_policy" "allow_cloudfront_read" {
   bucket = aws_s3_bucket.private_site_bucket.id
   policy = data.aws_iam_policy_document.allow_cloudfront_read.json
 }
+
+data "aws_iam_policy_document" "deployment_access" {
+  statement {
+    sid     = "ListObjectsInBucket"
+    effect  = "Allow"
+    actions = ["s3:ListBucket"]
+    resources = [
+      aws_s3_bucket.private_site_bucket.arn
+    ]
+  }
+
+  statement {
+    sid    = "UpdateS3Bucket"
+    effect = "Allow"
+    actions = [
+      "s3:*Object"
+    ]
+    resources = [
+      "${aws_s3_bucket.private_site_bucket.arn}/*"
+    ]
+  }
+
+  statement {
+    sid     = "InvalidateCloudFront"
+    effect  = "Allow"
+    actions = ["cloudfront:CreateInvalidation"]
+    resources = [
+      aws_cloudfront_distribution.s3_distribution.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "deployment_access" {
+  name        = var.deployment_policy_name
+  description = "Allows listing/updating the site bucket and invalidating the CloudFront distribution."
+  policy      = data.aws_iam_policy_document.deployment_access.json
+  tags        = var.tags
+}
