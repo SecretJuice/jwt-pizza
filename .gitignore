@@ -14,3 +14,7 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 .nyc_output/
+
+.terraform*
+.terraform/*
+*tfstate*
