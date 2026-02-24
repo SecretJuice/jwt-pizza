@@ -6,11 +6,24 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = ">= 5.0"
+    }
   }
 }
 
 provider "aws" {
   region = var.aws_region
+}
+
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }
 
 data "aws_cloudfront_cache_policy" "caching_optimized" {
@@ -47,11 +60,52 @@ resource "aws_cloudfront_origin_access_control" "s3_oac" {
   signing_protocol                  = "sigv4"
 }
 
+resource "aws_acm_certificate" "site_cert" {
+  provider                  = aws.us_east_1
+  domain_name               = var.custom_domain
+  subject_alternative_names = var.subject_alternative_names
+  validation_method         = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "cloudflare_dns_record" "acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.site_cert.domain_validation_options :
+    dvo.domain_name => {
+      name    = dvo.resource_record_name
+      type    = dvo.resource_record_type
+      content = dvo.resource_record_value
+    }
+  }
+
+  zone_id = var.cloudflare_zone_id
+  name    = each.value.name
+  type    = each.value.type
+  content = each.value.content
+  ttl     = 1
+  proxied = false
+}
+
+resource "aws_acm_certificate_validation" "site_cert" {
+  provider        = aws.us_east_1
+  certificate_arn = aws_acm_certificate.site_cert.arn
+
+  validation_record_fqdns = [
+    for dvo in aws_acm_certificate.site_cert.domain_validation_options : dvo.resource_record_name
+  ]
+
+  depends_on = [cloudflare_dns_record.acm_validation]
+}
+
 resource "aws_cloudfront_distribution" "s3_distribution" {
   enabled             = true
   comment             = "Distribution for ${var.bucket_name}"
   default_root_object = var.default_root_object
   price_class         = var.price_class
+  aliases             = concat([var.custom_domain], var.additional_aliases)
 
   origin {
     domain_name              = aws_s3_bucket.private_site_bucket.bucket_regional_domain_name
@@ -75,10 +129,23 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.site_cert.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
   tags = var.tags
+}
+
+resource "cloudflare_dns_record" "custom_domain" {
+  count = var.manage_custom_domain_dns ? 1 : 0
+
+  zone_id = var.cloudflare_zone_id
+  name    = var.cloudflare_record_name
+  type    = "CNAME"
+  content = aws_cloudfront_distribution.s3_distribution.domain_name
+  ttl     = 1
+  proxied = var.cloudflare_proxied
 }
 
 data "aws_iam_policy_document" "allow_cloudfront_read" {

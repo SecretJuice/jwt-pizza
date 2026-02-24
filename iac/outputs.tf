@@ -12,3 +12,8 @@ output "cloudfront_domain_name" {
   description = "Domain name of the CloudFront distribution."
   value       = aws_cloudfront_distribution.s3_distribution.domain_name
 }
+
+output "acm_certificate_arn" {
+  description = "ARN of the ACM certificate attached to CloudFront."
+  value       = aws_acm_certificate_validation.site_cert.certificate_arn
+}
