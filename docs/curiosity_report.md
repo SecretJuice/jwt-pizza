@@ -64,7 +64,7 @@ N2 --> N2_CT2
 N2 --> N2_Storage
 
 %% Shared Storage
-DC --> SS[Shared Storage (NFS / Ceph)]
+DC --> SS[Shared Storage with NFS / Ceph]
 SS --> N1
 SS --> N2
 
